@@ -51,7 +51,7 @@ Transform any GitHub repository's commit history into AI-generated music tracks.
 ## 🎬 Demo
 
 ### Quick Start
-1. Visit the app at `http://localhost:5173`
+1. Visit **[codejams.dev](https://codejams.dev)**
 2. Enter any GitHub repository: `facebook/react` or `microsoft/vscode`
 3. Add your OpenAI API key (one-time setup)
 4. Click **Generate** and hear your code!
@@ -59,14 +59,14 @@ Transform any GitHub repository's commit history into AI-generated music tracks.
 ### URL Format
 ```
 Original:     github.com/facebook/react
-CodeJams:     localhost:5173/github.com/facebook/react
+CodeJams:     codejams.dev/github.com/facebook/react
 ```
 
 ### Try These Popular Repos
-- `facebook/react` - A JavaScript library for building user interfaces
-- `microsoft/vscode` - Visual Studio Code
-- `vercel/next.js` - The React Framework
-- `torvalds/linux` - Linux kernel source tree
+- [facebook/react](https://codejams.dev/github.com/facebook/react) - A JavaScript library for building user interfaces
+- [microsoft/vscode](https://codejams.dev/github.com/microsoft/vscode) - Visual Studio Code
+- [vercel/next.js](https://codejams.dev/github.com/vercel/next.js) - The React Framework
+- [torvalds/linux](https://codejams.dev/github.com/torvalds/linux) - Linux kernel source tree
 
 ---
 
@@ -245,7 +245,7 @@ See [GitHub Issues](https://github.com/SaiKrishna-KK/CodeJams/issues) for detail
 
 **Reset via DevTools**:
 1. Press F12 (Chrome/Firefox) or Cmd+Option+I (Safari)
-2. Go to **Application** → **Local Storage** → `http://localhost:5173`
+2. Go to **Application** → **Local Storage** → `https://codejams.dev`
 3. Delete `codejams_api_key`
 4. Refresh the page
 
@@ -253,7 +253,9 @@ See [GitHub Issues](https://github.com/SaiKrishna-KK/CodeJams/issues) for detail
 
 ## 🚀 Deployment
 
-Want to deploy CodeJams to your own domain? See the complete [Deployment Guide](DEPLOYMENT.md) for step-by-step instructions.
+**CodeJams is live at [codejams.dev](https://codejams.dev)** - deployed on Vercel with automatic SSL and global CDN.
+
+Want to deploy your own instance? See the complete [Deployment Guide](DEPLOYMENT.md) for step-by-step instructions.
 
 **Quick Start with Vercel:**
 ```bash

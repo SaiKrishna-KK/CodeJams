@@ -271,6 +271,9 @@ export default function HomePage() {
           <p className="text-xs text-gray-600">
             Powered by Web Audio API & AI
           </p>
+          <p className="text-sm text-gray-500 mt-8">
+            Made with ❤️ by Krishna
+          </p>
         </div>
       </div>
 
