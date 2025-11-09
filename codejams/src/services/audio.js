@@ -5,6 +5,11 @@ export class AudioEngine {
     this.context = null;
     this.masterGain = null;
     this.isPlaying = false;
+    // Individual gain nodes for mixer
+    this.drumsGain = null;
+    this.bassGain = null;
+    this.synthGain = null;
+    this.vocalGain = null;
   }
 
   init() {
@@ -14,6 +19,43 @@ export class AudioEngine {
     this.masterGain = this.context.createGain();
     this.masterGain.gain.value = 0.6;
     this.masterGain.connect(this.context.destination);
+
+    // Create individual gain nodes for mixer
+    this.drumsGain = this.context.createGain();
+    this.bassGain = this.context.createGain();
+    this.synthGain = this.context.createGain();
+    this.vocalGain = this.context.createGain();
+
+    // Set default volumes (0-1)
+    this.drumsGain.gain.value = 1.0;
+    this.bassGain.gain.value = 1.0;
+    this.synthGain.gain.value = 1.0;
+    this.vocalGain.gain.value = 1.0;
+
+    // Connect to master
+    this.drumsGain.connect(this.masterGain);
+    this.bassGain.connect(this.masterGain);
+    this.synthGain.connect(this.masterGain);
+    this.vocalGain.connect(this.masterGain);
+  }
+
+  /**
+   * Set volume for individual tracks (0-1)
+   */
+  setDrumsVolume(value) {
+    if (this.drumsGain) this.drumsGain.gain.value = value;
+  }
+
+  setBassVolume(value) {
+    if (this.bassGain) this.bassGain.gain.value = value;
+  }
+
+  setSynthVolume(value) {
+    if (this.synthGain) this.synthGain.gain.value = value;
+  }
+
+  setVocalVolume(value) {
+    if (this.vocalGain) this.vocalGain.gain.value = value;
   }
 
   /**
@@ -32,14 +74,14 @@ export class AudioEngine {
       gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
 
       osc.connect(gain);
-      gain.connect(this.masterGain);
+      gain.connect(this.synthGain);
 
       osc.start(time);
       osc.stop(time + duration);
     });
   }
 
-  playKick(time) {
+  playKick(time, intensity = 1.0) {
     const osc = this.context.createOscillator();
     const gain = this.context.createGain();
 
@@ -47,17 +89,17 @@ export class AudioEngine {
     osc.frequency.setValueAtTime(150, time);
     osc.frequency.exponentialRampToValueAtTime(0.001, time + 0.5);
 
-    gain.gain.setValueAtTime(1, time);
+    gain.gain.setValueAtTime(1 * intensity, time);
     gain.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
 
     osc.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.drumsGain);
 
     osc.start(time);
     osc.stop(time + 0.5);
   }
 
-  playSnare(time) {
+  playSnare(time, intensity = 1.0) {
     // Create noise buffer
     const bufferSize = this.context.sampleRate * 0.2;
     const buffer = this.context.createBuffer(1, bufferSize, this.context.sampleRate);
@@ -75,12 +117,12 @@ export class AudioEngine {
     filter.frequency.value = 1000;
 
     const gain = this.context.createGain();
-    gain.gain.setValueAtTime(0.8, time);
+    gain.gain.setValueAtTime(0.8 * intensity, time);
     gain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
 
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.drumsGain);
 
     noise.start(time);
     noise.stop(time + 0.2);
@@ -100,7 +142,7 @@ export class AudioEngine {
     gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
 
     osc.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.bassGain);
 
     osc.start(time);
     osc.stop(time + duration);
@@ -117,7 +159,7 @@ export class AudioEngine {
     gain.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
 
     osc.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.synthGain);
 
     osc.start(time);
     osc.stop(time + 0.3);
@@ -135,7 +177,7 @@ export class AudioEngine {
     gain.gain.linearRampToValueAtTime(0, time + 0.1);
 
     osc.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.drumsGain);
 
     osc.start(time);
     osc.stop(time + 0.1);
@@ -157,7 +199,7 @@ export class AudioEngine {
     gain.gain.setValueAtTime(0.3, time);
 
     noise.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.drumsGain);
 
     noise.start(time);
   }
@@ -173,7 +215,7 @@ export class AudioEngine {
     gain.gain.exponentialRampToValueAtTime(0.001, time + 0.4);
 
     osc.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.drumsGain);
 
     osc.start(time);
     osc.stop(time + 0.4);
@@ -197,7 +239,7 @@ export class AudioEngine {
       gain.gain.exponentialRampToValueAtTime(0.001, time + (i * 0.1) + 0.1);
 
       osc.connect(gain);
-      gain.connect(this.masterGain);
+      gain.connect(this.drumsGain);
 
       osc.start(time + (i * 0.1));
       osc.stop(time + (i * 0.1) + 0.1);
@@ -217,7 +259,7 @@ export class AudioEngine {
     gain.gain.setValueAtTime(0, time + 0.15);
 
     osc.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.drumsGain);
 
     osc.start(time);
     osc.stop(time + 0.15);
@@ -246,7 +288,7 @@ export class AudioEngine {
 
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.drumsGain);
 
     noise.start(time);
   }
@@ -289,7 +331,7 @@ export class AudioEngine {
     filter1.connect(filter2);
     filter2.connect(filter3);
     filter3.connect(gain);
-    gain.connect(this.masterGain);
+    gain.connect(this.vocalGain);
 
     carrier.start(time);
     carrier.stop(time + duration);
@@ -299,6 +341,80 @@ export class AudioEngine {
     const vowels = ['a', 'e', 'i', 'o', 'u'];
     const charCode = authorName.charCodeAt(0);
     return vowels[charCode % vowels.length];
+  }
+
+  /**
+   * Calculate dynamic intensity based on commit metadata
+   * @param {Object} commit - Commit data
+   * @param {number} baseIntensity - Base intensity level
+   * @returns {number} Adjusted intensity (0.0 - 1.5)
+   */
+  calculateDynamicIntensity(commit, baseIntensity = 0.8) {
+    let intensity = baseIntensity;
+
+    // Files changed impact (0-50 files = 0.0 to +0.3 boost)
+    if (commit.filesChanged) {
+      const filesBoost = Math.min(commit.filesChanged / 50, 1.0) * 0.3;
+      intensity += filesBoost;
+    }
+
+    // Late night coding boost (10pm - 4am = +0.2 intensity)
+    if (commit.date || commit.timestamp) {
+      const hour = new Date(commit.date || commit.timestamp).getHours();
+      if ((hour >= 22 && hour <= 23) || (hour >= 0 && hour <= 4)) {
+        intensity += 0.2;
+      }
+    }
+
+    // Breaking changes = dramatic boost
+    if (/breaking|major|rewrite|refactor/i.test(commit.message)) {
+      intensity += 0.3;
+    }
+
+    // Bug fixes = slightly reduced intensity (calmer)
+    if (/fix|bug|patch/i.test(commit.message)) {
+      intensity -= 0.1;
+    }
+
+    // Feature additions = moderate boost
+    if (/feat|feature|add/i.test(commit.message)) {
+      intensity += 0.15;
+    }
+
+    // Cap intensity between 0.3 and 1.5
+    return Math.max(0.3, Math.min(1.5, intensity));
+  }
+
+  /**
+   * Get special effect for commit based on metadata
+   * @param {Object} commit - Commit data
+   * @returns {string|null} Effect name or null
+   */
+  getCommitEffect(commit) {
+    // Merge commits get cowbell
+    if (/merge/i.test(commit.message)) {
+      return 'cowbell';
+    }
+
+    // Breaking changes get orchestral hit
+    if (/breaking|major/i.test(commit.message)) {
+      return 'orchestralHit';
+    }
+
+    // Very large commits (>20 files) get glitch
+    if (commit.filesChanged && commit.filesChanged > 20) {
+      return 'glitch';
+    }
+
+    // Late night commits (2am-4am) get scratch effect
+    if (commit.date || commit.timestamp) {
+      const hour = new Date(commit.date || commit.timestamp).getHours();
+      if (hour >= 2 && hour <= 4) {
+        return 'scratch';
+      }
+    }
+
+    return null;
   }
 
   selectBeatPattern(commit, recentCommits) {
@@ -438,39 +554,85 @@ export class AudioEngine {
     const progression = getChordProgression(genre);
     const melodicScale = getMelodicScale(genre);
 
-    // Just play all commits in order, no sections
+    // Detect song structure
+    const sections = this.detectSongStructure(commits);
+
+    // Create a map from commit to section
+    const commitToSection = new Map();
+    sections.forEach(section => {
+      section.commits.forEach(commit => {
+        commitToSection.set(commit.sha, section);
+      });
+    });
+
+    let lastSectionType = null;
+    let beatCounter = 0;
+
     commits.forEach((commit, beatIndex) => {
       const time = startTime + (beatIndex * beatDuration);
       const pattern = this.selectBeatPattern(commit, commits.slice(Math.max(0, beatIndex - 5), beatIndex));
       const patternIndex = beatIndex % pattern.length;
-      const intensity = 0.8;
+
+      // Get section for this commit
+      const section = commitToSection.get(commit.sha) || { type: 'verse', layers: ['drums', 'bass', 'synth'], intensity: 0.8 };
+
+      // Calculate dynamic intensity based on commit metadata
+      const dynamicIntensity = this.calculateDynamicIntensity(commit, section.intensity);
+      const intensity = dynamicIntensity;
+
+      // Detect section change and add transition
+      if (lastSectionType !== section.type) {
+        // Play transition sound at section boundary
+        if (beatIndex > 0) {
+          if (section.type === 'chorus' || section.type === 'verse') {
+            // Drum fill before chorus/verse
+            this.playDrumRoll(time - beatDuration * 0.5);
+          } else if (section.type === 'bridge') {
+            // Reverse cymbal before bridge
+            this.playReverseCymbal(time - beatDuration * 1.5);
+          } else if (section.type === 'outro') {
+            // Orchestral hit at outro
+            this.playOrchestralHit(time);
+          }
+        }
+
+        // Notify section change
+        if (onSection) {
+          setTimeout(() => onSection(section.type, beatIndex), (time - this.context.currentTime) * 1000);
+        }
+
+        lastSectionType = section.type;
+        beatCounter = 0;
+      }
 
       // Get current chord based on beat position
-      const chordIndex = getChordIndexForBeat(beatIndex, 4); // Change chord every 4 beats
+      const chordIndex = getChordIndexForBeat(beatIndex, 4);
       const currentChord = progression.chords[chordIndex];
       const currentBassNote = progression.bassNotes[chordIndex];
 
-      // Play drums based on pattern
-      if (pattern[patternIndex] === 'K') {
-        this.playKick(time, intensity);
-      } else if (pattern[patternIndex] === 'S') {
-        this.playSnare(time, intensity);
-      } else if (pattern[patternIndex] === 'H') {
-        this.playHiHat(time, 'closed', intensity);
+      // Play drums based on pattern (if section has drums layer)
+      if (section.layers.includes('drums')) {
+        if (pattern[patternIndex] === 'K') {
+          this.playKick(time, intensity);
+        } else if (pattern[patternIndex] === 'S') {
+          this.playSnare(time, intensity);
+        } else if (pattern[patternIndex] === 'H') {
+          this.playHiHat(time, 'closed', intensity);
+        }
       }
 
-      // Bass (every 2 beats) - now using chord progression
-      if (beatIndex % 2 === 0) {
+      // Bass (every 2 beats) - if section has bass layer
+      if (section.layers.includes('bass') && beatIndex % 2 === 0) {
         this.playBass(time, currentBassNote, beatDuration * 1.5, intensity);
       }
 
-      // Chords (every 4 beats) - NEW! Play full chords
-      if (beatIndex % 4 === 0) {
+      // Chords (every 4 beats) - if section has synth/chord layer
+      if ((section.layers.includes('synth') || section.layers.includes('vocal')) && beatIndex % 4 === 0) {
         this.playChord(time, currentChord, beatDuration * 3.5, intensity * 0.7);
       }
 
-      // Melodic synth (based on commit hash) - now uses scale
-      if (commit) {
+      // Melodic synth - if section has synth layer
+      if (section.layers.includes('synth') && commit) {
         const hashNum = parseInt(commit.sha.substring(0, 2), 16);
         if (hashNum % 3 === 0) {
           const noteIndex = hashNum % melodicScale.length;
@@ -478,8 +640,8 @@ export class AudioEngine {
         }
       }
 
-      // Vocals (every 8th beat)
-      if (beatIndex % 8 === 0 && commit) {
+      // Vocals (every 8th beat) - if section has vocal layer
+      if (section.layers.includes('vocal') && beatIndex % 8 === 0 && commit) {
         const vowel = this.getVowelForAuthor(commit.author);
         const pitch = 220 + (parseInt(commit.sha.substring(0, 4), 16) % 220);
         this.singVowel(time, beatDuration * 2, vowel, pitch, intensity);
@@ -495,10 +657,23 @@ export class AudioEngine {
         });
       }
 
+      // Commit-driven special effects
+      if (commit) {
+        const effect = this.getCommitEffect(commit);
+        if (effect) {
+          const effectMethod = `play${effect.charAt(0).toUpperCase() + effect.slice(1)}`;
+          if (this[effectMethod]) {
+            this[effectMethod](time + 0.05);
+          }
+        }
+      }
+
       // Callback for visualizer
       if (onBeat) {
         setTimeout(() => onBeat(beatIndex), (time - this.context.currentTime) * 1000);
       }
+
+      beatCounter++;
     });
 
     this.isPlaying = true;
@@ -508,7 +683,7 @@ export class AudioEngine {
       this.isPlaying = false;
     }, totalDuration * 1000);
 
-    return { duration: totalDuration };
+    return { duration: totalDuration, sections };
   }
 
   stop() {
@@ -516,6 +691,10 @@ export class AudioEngine {
       this.context.close();
       this.context = null;
       this.masterGain = null;
+      this.drumsGain = null;
+      this.bassGain = null;
+      this.synthGain = null;
+      this.vocalGain = null;
       this.isPlaying = false;
     }
   }
@@ -540,6 +719,17 @@ export class AudioEngine {
     // Get chord progression for this genre
     const progression = getChordProgression(genre);
     const melodicScale = getMelodicScale(genre);
+
+    // Detect song structure
+    const sections = this.detectSongStructure(commits);
+
+    // Create a map from commit to section
+    const commitToSection = new Map();
+    sections.forEach(section => {
+      section.commits.forEach(commit => {
+        commitToSection.set(commit.sha, section);
+      });
+    });
 
     // Helper functions for offline rendering
     const playKickOffline = (time, intensity = 1.0) => {
@@ -620,8 +810,9 @@ export class AudioEngine {
       const osc = context.createOscillator();
       const gain = context.createGain();
 
+      const freq = typeof note === 'string' ? noteToFrequency(note) : note;
       osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(note, time);
+      osc.frequency.setValueAtTime(freq, time);
 
       gain.gain.setValueAtTime(0.3 * intensity, time);
       gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
@@ -714,39 +905,163 @@ export class AudioEngine {
       });
     };
 
+    const playDrumRollOffline = (time) => {
+      for (let i = 0; i < 8; i++) {
+        playSnareOffline(time + (i * 0.05));
+      }
+    };
+
+    const playReverseCymbalOffline = (time) => {
+      const bufferSize = context.sampleRate * 0.3;
+      const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+      const data = buffer.getChannelData(0);
+
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = (Math.random() * 2 - 1) * (i / bufferSize);
+      }
+
+      const noise = context.createBufferSource();
+      noise.buffer = buffer;
+
+      const gain = context.createGain();
+      gain.gain.setValueAtTime(0.3, time);
+
+      noise.connect(gain);
+      gain.connect(masterGain);
+
+      noise.start(time);
+    };
+
+    const playOrchestralHitOffline = (time) => {
+      const osc = context.createOscillator();
+      const gain = context.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(100, time);
+
+      gain.gain.setValueAtTime(1.5, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.4);
+
+      osc.connect(gain);
+      gain.connect(masterGain);
+
+      osc.start(time);
+      osc.stop(time + 0.4);
+    };
+
+    const playCowbellOffline = (time) => {
+      for (let i = 0; i < 5; i++) {
+        const osc = context.createOscillator();
+        const gain = context.createGain();
+
+        osc.type = 'square';
+        osc.frequency.value = 800 + (i * 100);
+
+        gain.gain.setValueAtTime(0.3, time + (i * 0.1));
+        gain.gain.exponentialRampToValueAtTime(0.001, time + (i * 0.1) + 0.1);
+
+        osc.connect(gain);
+        gain.connect(masterGain);
+
+        osc.start(time + (i * 0.1));
+        osc.stop(time + (i * 0.1) + 0.1);
+      }
+    };
+
+    const playGlitchOffline = (time) => {
+      const osc = context.createOscillator();
+      const gain = context.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(440, time);
+      osc.frequency.setValueAtTime(220, time + 0.05);
+      osc.frequency.setValueAtTime(880, time + 0.1);
+
+      gain.gain.setValueAtTime(0.4, time);
+      gain.gain.setValueAtTime(0, time + 0.15);
+
+      osc.connect(gain);
+      gain.connect(masterGain);
+
+      osc.start(time);
+      osc.stop(time + 0.15);
+    };
+
+    const playScratchOffline = (time) => {
+      const osc = context.createOscillator();
+      const gain = context.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(1000, time);
+      osc.frequency.linearRampToValueAtTime(100, time + 0.1);
+
+      gain.gain.setValueAtTime(0.5, time);
+      gain.gain.linearRampToValueAtTime(0, time + 0.1);
+
+      osc.connect(gain);
+      gain.connect(masterGain);
+
+      osc.start(time);
+      osc.stop(time + 0.1);
+    };
+
+    let lastSectionType = null;
+
     // Generate all beats
     commits.forEach((commit, beatIndex) => {
       const time = startTime + (beatIndex * beatDuration);
       const pattern = this.selectBeatPattern(commit, commits.slice(Math.max(0, beatIndex - 5), beatIndex));
       const patternIndex = beatIndex % pattern.length;
-      const intensity = 0.8;
+
+      // Get section for this commit
+      const section = commitToSection.get(commit.sha) || { type: 'verse', layers: ['drums', 'bass', 'synth'], intensity: 0.8 };
+
+      // Calculate dynamic intensity based on commit metadata
+      const dynamicIntensity = this.calculateDynamicIntensity(commit, section.intensity);
+      const intensity = dynamicIntensity;
+
+      // Detect section change and add transition
+      if (lastSectionType !== section.type) {
+        if (beatIndex > 0) {
+          if (section.type === 'chorus' || section.type === 'verse') {
+            playDrumRollOffline(time - beatDuration * 0.5);
+          } else if (section.type === 'bridge') {
+            playReverseCymbalOffline(time - beatDuration * 1.5);
+          } else if (section.type === 'outro') {
+            playOrchestralHitOffline(time);
+          }
+        }
+        lastSectionType = section.type;
+      }
 
       // Get current chord based on beat position
-      const chordIndex = getChordIndexForBeat(beatIndex, 4); // Change chord every 4 beats
+      const chordIndex = getChordIndexForBeat(beatIndex, 4);
       const currentChord = progression.chords[chordIndex];
       const currentBassNote = progression.bassNotes[chordIndex];
 
-      // Play drums based on pattern
-      if (pattern[patternIndex] === 'K') {
-        playKickOffline(time, intensity);
-      } else if (pattern[patternIndex] === 'S') {
-        playSnareOffline(time, intensity);
-      } else if (pattern[patternIndex] === 'H') {
-        playHiHatOffline(time, 'closed', intensity);
+      // Play drums based on pattern (if section has drums layer)
+      if (section.layers.includes('drums')) {
+        if (pattern[patternIndex] === 'K') {
+          playKickOffline(time, intensity);
+        } else if (pattern[patternIndex] === 'S') {
+          playSnareOffline(time, intensity);
+        } else if (pattern[patternIndex] === 'H') {
+          playHiHatOffline(time, 'closed', intensity);
+        }
       }
 
-      // Bass (every 2 beats) - now using chord progression
-      if (beatIndex % 2 === 0) {
+      // Bass (every 2 beats) - if section has bass layer
+      if (section.layers.includes('bass') && beatIndex % 2 === 0) {
         playBassOffline(time, currentBassNote, beatDuration * 1.5, intensity);
       }
 
-      // Chords (every 4 beats) - NEW! Play full chords
-      if (beatIndex % 4 === 0) {
+      // Chords (every 4 beats) - if section has synth/chord layer
+      if ((section.layers.includes('synth') || section.layers.includes('vocal')) && beatIndex % 4 === 0) {
         playChordOffline(time, currentChord, beatDuration * 3.5, intensity * 0.7);
       }
 
-      // Melodic synth (based on commit hash) - now uses scale
-      if (commit) {
+      // Melodic synth - if section has synth layer
+      if (section.layers.includes('synth') && commit) {
         const hashNum = parseInt(commit.sha.substring(0, 2), 16);
         if (hashNum % 3 === 0) {
           const noteIndex = hashNum % melodicScale.length;
@@ -754,11 +1069,25 @@ export class AudioEngine {
         }
       }
 
-      // Vocals (every 8th beat)
-      if (beatIndex % 8 === 0 && commit) {
+      // Vocals (every 8th beat) - if section has vocal layer
+      if (section.layers.includes('vocal') && beatIndex % 8 === 0 && commit) {
         const vowel = this.getVowelForAuthor(commit.author);
         const pitch = 220 + (parseInt(commit.sha.substring(0, 4), 16) % 220);
         singVowelOffline(time, beatDuration * 2, vowel, pitch, intensity);
+      }
+
+      // Commit-driven special effects
+      if (commit) {
+        const effect = this.getCommitEffect(commit);
+        if (effect === 'cowbell') {
+          playCowbellOffline(time + 0.05);
+        } else if (effect === 'orchestralHit') {
+          playOrchestralHitOffline(time + 0.05);
+        } else if (effect === 'glitch') {
+          playGlitchOffline(time + 0.05);
+        } else if (effect === 'scratch') {
+          playScratchOffline(time + 0.05);
+        }
       }
     });
 

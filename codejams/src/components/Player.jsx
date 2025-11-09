@@ -28,12 +28,27 @@ export default function Player() {
   const [customGenre, setCustomGenre] = useState(null);
   const [customBPM, setCustomBPM] = useState(null);
   const [showControls, setShowControls] = useState(false);
+  const [currentSection, setCurrentSection] = useState(null);
+
+  // Audio mixer volumes (0-100)
+  const [drumsVolume, setDrumsVolume] = useState(100);
+  const [bassVolume, setBassVolume] = useState(100);
+  const [synthVolume, setSynthVolume] = useState(100);
+  const [vocalVolume, setVocalVolume] = useState(100);
 
   const audioEngine = useRef(new AudioEngine());
 
   // Get effective genre and BPM (custom or original)
   const effectiveGenre = customGenre || analysis?.genre;
   const effectiveBPM = customBPM || analysis?.bpm;
+
+  // Update audio mixer volumes
+  useEffect(() => {
+    audioEngine.current.setDrumsVolume(drumsVolume / 100);
+    audioEngine.current.setBassVolume(bassVolume / 100);
+    audioEngine.current.setSynthVolume(synthVolume / 100);
+    audioEngine.current.setVocalVolume(vocalVolume / 100);
+  }, [drumsVolume, bassVolume, synthVolume, vocalVolume]);
 
   useEffect(() => {
     // Check if this repo is bookmarked
@@ -87,6 +102,7 @@ export default function Player() {
 
     setIsPlaying(true);
     setCurrentBeat(0);
+    setCurrentSection(null);
 
     const result = audioEngine.current.generateTrack(
       commits,
@@ -96,12 +112,17 @@ export default function Player() {
         console.log('🔔 Beat callback received:', beatIndex);
         setCurrentBeat(beatIndex);
         console.log('✏️ setCurrentBeat called with:', beatIndex);
+      },
+      (sectionType, beatIndex) => {
+        console.log('🎵 Section change:', sectionType, 'at beat', beatIndex);
+        setCurrentSection(sectionType);
       }
     );
 
     // Reset after playback
     setTimeout(() => {
       setIsPlaying(false);
+      setCurrentSection(null);
     }, result.duration * 1000);
   };
 
@@ -271,6 +292,11 @@ export default function Player() {
                 CUSTOM
               </span>
             )}
+            {isPlaying && currentSection && (
+              <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                {currentSection.toUpperCase()}
+              </span>
+            )}
           </div>
           <p className="text-xl text-gray-400 italic">
             "{analysis?.vibe}"
@@ -365,6 +391,101 @@ export default function Player() {
                   </button>
                 )}
               </div>
+
+              {/* Audio Mixer */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-3 font-bold">
+                  🎚️ Audio Mixer
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Drums */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-gray-400">🥁 Drums</span>
+                      <span className="text-sm font-bold text-primary">{drumsVolume}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={drumsVolume}
+                      onChange={(e) => setDrumsVolume(parseInt(e.target.value))}
+                      className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                      style={{
+                        background: `linear-gradient(to right, #00ff94 0%, #00ff94 ${drumsVolume}%, #4b5563 ${drumsVolume}%, #4b5563 100%)`
+                      }}
+                    />
+                  </div>
+
+                  {/* Bass */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-gray-400">🎸 Bass</span>
+                      <span className="text-sm font-bold text-primary">{bassVolume}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={bassVolume}
+                      onChange={(e) => setBassVolume(parseInt(e.target.value))}
+                      className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                      style={{
+                        background: `linear-gradient(to right, #00ff94 0%, #00ff94 ${bassVolume}%, #4b5563 ${bassVolume}%, #4b5563 100%)`
+                      }}
+                    />
+                  </div>
+
+                  {/* Synth */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-gray-400">🎹 Synth</span>
+                      <span className="text-sm font-bold text-primary">{synthVolume}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={synthVolume}
+                      onChange={(e) => setSynthVolume(parseInt(e.target.value))}
+                      className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                      style={{
+                        background: `linear-gradient(to right, #00ff94 0%, #00ff94 ${synthVolume}%, #4b5563 ${synthVolume}%, #4b5563 100%)`
+                      }}
+                    />
+                  </div>
+
+                  {/* Vocals */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-gray-400">🎤 Vocals</span>
+                      <span className="text-sm font-bold text-primary">{vocalVolume}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={vocalVolume}
+                      onChange={(e) => setVocalVolume(parseInt(e.target.value))}
+                      className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                      style={{
+                        background: `linear-gradient(to right, #00ff94 0%, #00ff94 ${vocalVolume}%, #4b5563 ${vocalVolume}%, #4b5563 100%)`
+                      }}
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setDrumsVolume(100);
+                    setBassVolume(100);
+                    setSynthVolume(100);
+                    setVocalVolume(100);
+                  }}
+                  className="mt-3 text-sm text-gray-400 hover:text-primary transition"
+                >
+                  ↺ Reset All Volumes
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -382,23 +503,30 @@ export default function Player() {
 
         {/* Current Commit Info */}
         {commits[currentBeat] && (
-          <div className="mb-8 bg-gray-800 rounded-lg p-6">
+          <div className="mb-8 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 border border-gray-700 shadow-2xl">
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 text-3xl">
+              <div className="flex-shrink-0 text-4xl">
                 {commits[currentBeat].easterEggs && commits[currentBeat].easterEggs.length > 0
                   ? commits[currentBeat].easterEggs.map(e => e.icon).join(' ')
                   : '💬'}
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-primary font-bold">{commits[currentBeat].author}</span>
-                  <span className="text-gray-500 text-sm">
-                    {new Date(commits[currentBeat].timestamp).toLocaleDateString()}
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-primary font-bold text-lg">{commits[currentBeat].author}</span>
+                  <span className="text-gray-500 text-sm px-2 py-1 bg-gray-900 rounded-lg">
+                    {new Date(commits[currentBeat].date).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="text-lg mb-2">{commits[currentBeat].message}</p>
-                <div className="text-sm text-gray-400">
-                  Commit {currentBeat + 1} of {commits.length}
+                <p className="text-lg mb-3 text-gray-200">{commits[currentBeat].message}</p>
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="text-gray-400">
+                    Commit {currentBeat + 1} of {commits.length}
+                  </span>
+                  {commits[currentBeat].filesChanged && (
+                    <span className="px-2 py-1 bg-primary/10 text-primary rounded text-xs">
+                      {commits[currentBeat].filesChanged} files changed
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -410,26 +538,39 @@ export default function Player() {
           <button
             onClick={handlePlay}
             disabled={isPlaying}
-            className="bg-primary text-dark font-bold px-8 py-4 rounded-lg text-lg hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="bg-gradient-to-r from-primary to-blue-500 text-dark font-bold px-12 py-5 rounded-2xl text-xl hover:shadow-lg hover:shadow-primary/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 disabled:transform-none"
           >
-            {isPlaying ? '⏸ Playing...' : '▶ Play'}
+            {isPlaying ? '🎵 Playing...' : '▶ Play Track'}
           </button>
 
           <button
             onClick={handlePlay}
             disabled={isPlaying}
-            className="bg-gray-700 px-6 py-4 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="bg-gray-700 px-8 py-5 rounded-2xl text-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 active:scale-95 disabled:transform-none border border-gray-600"
           >
             🔄 Replay
           </button>
         </div>
 
         {/* Stats */}
-        <div className="text-center text-gray-400">
-          <p>
-            {commits.length} commits • {[...new Set(commits.map(c => c.author))].length} contributors • {effectiveBPM} BPM
-            {customBPM && <span className="text-primary ml-2">(Custom)</span>}
-          </p>
+        <div className="text-center">
+          <div className="inline-flex items-center gap-4 px-6 py-3 bg-gradient-to-r from-gray-800/60 to-gray-900/60 backdrop-blur-sm rounded-full border border-gray-700/50">
+            <div className="flex items-center gap-2">
+              <span className="text-primary font-bold">{commits.length}</span>
+              <span className="text-gray-400 text-sm">commits</span>
+            </div>
+            <span className="text-gray-600">•</span>
+            <div className="flex items-center gap-2">
+              <span className="text-primary font-bold">{[...new Set(commits.map(c => c.author))].length}</span>
+              <span className="text-gray-400 text-sm">contributors</span>
+            </div>
+            <span className="text-gray-600">•</span>
+            <div className="flex items-center gap-2">
+              <span className="text-primary font-bold">{effectiveBPM}</span>
+              <span className="text-gray-400 text-sm">BPM</span>
+              {customBPM && <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded">Custom</span>}
+            </div>
+          </div>
         </div>
       </div>
     </div>
