@@ -8,7 +8,7 @@
 [![React](https://img.shields.io/badge/React-18.3-blue.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-purple.svg)](https://vitejs.dev/)
 
-[Features](#-features) • [Demo](#-demo) • [Installation](#-installation) • [Usage](#-usage) • [Roadmap](#-roadmap) • [Deployment](#-deployment)
+[Features](#-features) • [Screenshots](#-screenshots) • [Demo](#-demo) • [Installation](#-installation) • [Usage](#-usage) • [Tech Stack](#-tech-stack) • [Deployment](#-deployment)
 
 Transform any GitHub repository's commit history into AI-generated music tracks. Each commit becomes a beat, contributors add layers, and the music tells your development story.
 
@@ -45,6 +45,26 @@ Transform any GitHub repository's commit history into AI-generated music tracks.
 - **Zero Friction**: Just paste a GitHub URL and hear music in seconds
 - **Bookmark System**: Save your favorite repositories with automatic new commit monitoring
 - **Shareable Links**: Send repository music directly to friends
+
+---
+
+## 📸 Screenshots
+
+<div align="center">
+
+### 🏠 Home Page
+![Home Page](.github/screenshots/index.png)
+*Beautiful gradient interface with popular repositories and recent searches. Simply enter any GitHub repository URL to get started.*
+
+### 🔑 API Key Setup
+![API Key Modal](.github/screenshots/api.png)
+*Privacy-first OpenAI API key management - stored locally in your browser, never sent to our servers.*
+
+### 🎵 Music Player & Controls
+![Music Player](.github/screenshots/repo-song.png)
+*Full-featured music player with genre detection, BPM control, audio mixer, interactive commit timeline, and real-time playback visualization.*
+
+</div>
 
 ---
 
