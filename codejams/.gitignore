@@ -25,3 +25,11 @@ dist-ssr
 
 # API keys
 .env
+.env.local
+.env.production
+
+# Vercel
+.vercel
+
+# Build output
+dist-ssr

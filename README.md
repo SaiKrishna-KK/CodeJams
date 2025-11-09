@@ -8,9 +8,11 @@
 [![React](https://img.shields.io/badge/React-18.3-blue.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.2-purple.svg)](https://vitejs.dev/)
 
-[Features](#-features) • [Demo](#-demo) • [Installation](#-installation) • [Usage](#-usage) • [Roadmap](#-roadmap)
+[Features](#-features) • [Demo](#-demo) • [Installation](#-installation) • [Usage](#-usage) • [Roadmap](#-roadmap) • [Deployment](#-deployment)
 
 Transform any GitHub repository's commit history into AI-generated music tracks. Each commit becomes a beat, contributors add layers, and the music tells your development story.
+
+**🎧 [Try it live at codejams.dev](https://codejams.dev)**
 
 </div>
 
@@ -246,6 +248,29 @@ See [GitHub Issues](https://github.com/SaiKrishna-KK/CodeJams/issues) for detail
 2. Go to **Application** → **Local Storage** → `http://localhost:5173`
 3. Delete `codejams_api_key`
 4. Refresh the page
+
+---
+
+## 🚀 Deployment
+
+Want to deploy CodeJams to your own domain? See the complete [Deployment Guide](DEPLOYMENT.md) for step-by-step instructions.
+
+**Quick Start with Vercel:**
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy
+cd codejams
+vercel
+
+# Deploy to production with custom domain
+vercel --prod
+```
+
+Then add your custom domain in the Vercel dashboard and configure DNS records.
+
+For detailed instructions including Cloudflare Pages, Netlify, and GitHub Pages options, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
