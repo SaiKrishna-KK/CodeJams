@@ -18,28 +18,28 @@ Transform any GitHub repository's commit history into AI-generated music tracks.
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎼 Core Music Generation
+### Core Music Generation
 - **AI-Powered Genre Detection**: Automatically analyzes commit messages and repo metadata to determine musical genre (Synthwave, Industrial, Ambient, Chiptune, Jazz, Techno, Rock, Lo-fi)
 - **Advanced Chord Progressions**: Genre-specific harmonic structures with authentic chord voicings
 - **Song Structure Sections**: Dynamically generated intro, verse, chorus, bridge, and outro based on commit patterns
 - **Multi-Layered Audio**: Up to 4 instrument tracks (drums, bass, synth, vocals) that adapt to repository complexity
 - **Commit-Driven Dynamics**: Music intensity responds to file changes, late-night commits, breaking changes, and more
 
-### 🎚️ Professional Controls
+### Professional Controls
 - **Audio Mixer**: Individual volume controls for drums, bass, synth, and vocal layers
 - **BPM Control**: Adjust tempo from 60-180 BPM to suit your preference
 - **Genre Override**: Manually select from 8+ genres if you want a different vibe
 - **MP3/WAV Export**: Download high-quality audio files (44.1kHz, stereo)
 
-### 🎨 Beautiful Interface
+### Beautiful Interface
 - **Interactive Timeline**: Visualize commits with color-coded author dots, hover tooltips, and smooth animations
 - **Easter Egg System**: Special visual indicators for bugs 🐛, breaking changes 💥, refactors ♻️, merges 🔀, and more
 - **Genre Badges**: Visual indicators showing the detected musical style
 - **Real-time Progress**: Watch the music generate and play in sync with the timeline
 
-### 🔐 Privacy & Performance
+### Privacy & Performance
 - **100% Client-Side**: All processing happens in your browser - no backend servers
 - **Privacy-First**: Your OpenAI API key is stored locally and never sent to our servers
 - **Zero Friction**: Just paste a GitHub URL and hear music in seconds
@@ -90,7 +90,7 @@ CodeJams:     codejams.dev/github.com/facebook/react
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
 - **Node.js** 16+ ([Download](https://nodejs.org/))
@@ -165,7 +165,7 @@ Don't like the AI's choice? Override with:
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Category | Technology |
 |----------|-----------|
@@ -180,7 +180,7 @@ Don't like the AI's choice? Override with:
 
 ---
 
-## 🎯 Current Status
+## Current Status
 
 ### ✅ Phase 1: Foundation (Complete)
 - [x] URL routing and GitHub integration
@@ -216,7 +216,7 @@ See [GitHub Issues](https://github.com/SaiKrishna-KK/CodeJams/issues) for detail
 
 ---
 
-## 🎵 How It Works
+## How It Works
 
 ### Music Generation Pipeline
 
@@ -251,7 +251,7 @@ See [GitHub Issues](https://github.com/SaiKrishna-KK/CodeJams/issues) for detail
 
 ---
 
-## 🔒 Privacy & Security
+## Privacy & Security
 
 - **No Backend**: All processing happens client-side in your browser
 - **API Key Storage**: Stored in browser `localStorage`, never transmitted to our servers
